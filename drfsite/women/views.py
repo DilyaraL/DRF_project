@@ -7,6 +7,13 @@ from .models import Women
 from .serializers import WomenSerializer
 
 
+class WomenAPIList(generics.ListCreateAPIView):
+    """Будет возвращать и список записей по get-запросы и
+    добавлять запись по post-запросу"""
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+
+
 class WomenAPIView(APIView):
     # queryset = Women.objects.all()# будем выводить все данные из таблицы Women
     # serializer_class = WomenSerializer
