@@ -1,47 +1,48 @@
 from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import *
+from .permissions import IsAdminOrReadOnly, IsOwnerOrReadOnly
 from .serializers import WomenSerializer
 
 
-class WomenViewSet(viewsets.ModelViewSet):
-    """"""
+class WomenAPIList(generics.ListCreateAPIView):
     queryset = Women.objects.all()
     serializer_class = WomenSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    def qet_queryset(self):
-        # Чтобы отображалось только первые 3 записи, queryset теперь можно не писать
-        pk = self.kwargs.get('pk')
 
-        if not pk:
-            return Women.objects.all()[:3]
-        # используем filter тк он тоже возвращает СПИСОК
-        return Women.objects.filter(pk=pk)
+class WomenAPIUpdate(generics.RetrieveUpdateAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
-    @action(methods=['get'], detail=True)  # False - возвращается список, True - одна запись
-    def category(self, request, pk=None):
-        # Будем выводить категории
-        cats = Category.objects.get(pk=pk)
-        return Response({'cats': cats.name})
 
-# class WomenAPIList(generics.ListCreateAPIView):
-#     """Будет возвращать и список записей по get-запросы и
-#     добавлять запись по post-запросу"""
+class WomenAPIDestroy(generics.RetrieveDestroyAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+# class WomenViewSet(viewsets.ModelViewSet):
+#     """"""
 #     queryset = Women.objects.all()
 #     serializer_class = WomenSerializer
 #
+#     def qet_queryset(self):
+#         # Чтобы отображалось только первые 3 записи, queryset теперь можно не писать
+#         pk = self.kwargs.get('pk')
 #
-# class WomenAPIUpdate(generics.UpdateAPIView):
-#     """Будем возвращать измененную запись для запросов put и patch"""
-#     queryset = Women.objects.all() # на самом деле тут будут отправляться не все записи, а только измененная, тк запрос ленивый
-#     serializer_class = WomenSerializer
+#         if not pk:
+#             return Women.objects.all()[:3]
+#         # используем filter тк он тоже возвращает СПИСОК
+#         return Women.objects.filter(pk=pk)
 #
-#
-# class WomenAPIDetailView(generics.RetrieveUpdateDestroyAPIView):
-#     """чтение, изменение и добавление отдельной записи (GET-, PUT-, PATCH- и DELETE-запросы)"""
-#     queryset = Women.objects.all()
-#     serializer_class = WomenSerializer
+#     @action(methods=['get'], detail=True)  # False - возвращается список, True - одна запись
+#     def category(self, request, pk=None):
+#         # Будем выводить категории
+#         cats = Category.objects.get(pk=pk)
+#         return Response({'cats': cats.name})
