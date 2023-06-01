@@ -10,5 +10,5 @@ class WomenSerializer(serializers.ModelSerializer):  # Сериализатор,
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Women
-        fields = ('title', 'content', 'cat')  # поля, кот. будут отправляться. записываются как в модели
-        # fields = "__all__" - если хотим, чтобы все поля вывелись
+        # fields = ('title', 'content', 'cat')  # поля, кот. будут отправляться. записываются как в модели
+        fields = "__all__" #- если хотим, чтобы все поля вывелись
